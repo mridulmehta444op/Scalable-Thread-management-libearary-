@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thread Manager Dashboard</title>
+    <link rel="stylesheet" href="index.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <h1><i class="fas fa-microchip"></i> Thread Management Dashboard</h1>
+            <div class="status">
+                <span class="status-indicator active"></span>
+                <span id="connection-status">Connected to Backend</span>
+            </div>
+        </header>
+
+        <!-- Main Dashboard -->
+        <div class="dashboard">
+            <!-- Left Panel: Controls -->
+            <div class="left-panel">
+                <!-- Thread Control -->
+                <div class="card">
+                    <h2><i class="fas fa-cogs"></i> Thread Control</h2>
+                    <div class="control-group">
+                        <div class="form-group">
+                            <label for="thread-count">Thread Count:</label>
+                            <div class="range-container">
+                                <input type="range" id="thread-count" min="1" max="10000" value="100">
+                                <span id="thread-count-value">100</span>
+                            </div>
+                        </div>
+                        
+                        <div class="button-group">
+                            <button id="start-threads" class="btn btn-success">
+                                <i class="fas fa-play"></i> Start Threads
+                            </button>
+                            <button id="pause-threads" class="btn btn-warning">
+                                <i class="fas fa-pause"></i> Pause
+                            </button>
+                            <button id="stop-threads" class="btn btn-danger">
+                                <i class="fas fa-stop"></i> Stop All
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Configuration -->
+                <div class="card">
+                    <h2><i class="fas fa-sliders-h"></i> Configuration</h2>
+                    <div class="form-group">
+                        <label for="scheduler-type">Scheduler Type:</label>
+                        <select id="scheduler-type">
+                            <option value="fifo">FIFO</option>
+                            <option value="priority">Priority</option>
+                            <option value="round-robin">Round Robin</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="max-threads">Max Threads:</label>
+                        <input type="number" id="max-threads" min="1" max="100000" value="10000">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="auto-scale">
+                            <input type="checkbox" id="auto-scale" checked>
+                            Auto-scale Threads
+                        </label>
+                    </div>
+                    
+                    <button id="apply-config" class="btn btn-primary">
+                        <i class="fas fa-save"></i> Apply Configuration
+                    </button>
+                </div>
+
+                <!-- Quick Stats -->
+                <div class="card">
+                    <h2><i class="fas fa-tachometer-alt"></i> Quick Stats</h2>
+                    <div class="stats-grid">
+                        <div class="stat-item">
+                            <div class="stat-label">Active Threads</div>
+                            <div class="stat-value" id="stat-active">0</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-label">CPU Usage</div>
+                            <div class="stat-value" id="stat-cpu">0%</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-label">Memory</div>
+                            <div class="stat-value" id="stat-memory">0 MB</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-label">Tasks/sec</div>
+                            <div class="stat-value" id="stat-throughput">0</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Panel: Visualizations -->
+            <div class="right-panel">
+                <!-- Performance Charts -->
+                <div class="card chart-card">
+                    <h2><i class="fas fa-chart-line"></i> Thread Performance</h2>
+                    <div class="chart-container">
+                        <canvas id="performance-chart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Thread List -->
+                <div class="card">
+                    <h2><i class="fas fa-list"></i> Active Threads</h2>
+                    <div class="table-container">
+                        <table id="thread-table">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Status</th>
+                                    <th>CPU %</th>
+                                    <th>Memory</th>
+                                    <th>Uptime</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="thread-table-body">
+                                <!-- Thread rows will be inserted here -->
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="pagination">
+                        <button id="prev-page" class="btn btn-sm"><i class="fas fa-chevron-left"></i></button>
+                        <span id="page-info">Page 1 of 1</span>
+                        <button id="next-page" class="btn btn-sm"><i class="fas fa-chevron-right"></i></button>
+                    </div>
+                </div>
+
+                <!-- Logs -->
+                <div class="card">
+                    <h2><i class="fas fa-terminal"></i> System Logs</h2>
+                    <div class="logs-container">
+                        <div id="logs-content">
+                            <div class="log-entry info">[12:00:00] System initialized</div>
+                            <div class="log-entry success">[12:00:01] Connected to thread manager</div>
+                            <div class="log-entry">[12:00:02] Ready to manage threads</div>
+                        </div>
+                    </div>
+                    <div class="logs-control">
+                        <button id="clear-logs" class="btn btn-sm">
+                            <i class="fas fa-trash"></i> Clear Logs
+                        </button>
+                        <div class="log-filter">
+                            <label>
+                                <input type="checkbox" id="log-errors" checked> Errors
+                            </label>
+                            <label>
+                                <input type="checkbox" id="log-info" checked> Info
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <div class="footer-info">
+                <span>Thread Manager v1.0 | C++ Backend Connected</span>
+                <span id="update-time">Last Updated: --:--:--</span>
+            </div>
+            <div class="footer-actions">
+                <button id="export-data" class="btn btn-sm">
+                    <i class="fas fa-download"></i> Export Data
+                </button>
+                <button id="refresh-data" class="btn btn-sm">
+                    <i class="fas fa-sync-alt"></i> Refresh
+                </button>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Scripts -->
+    <script src="index.js"></script>
+</body>
+</html>
